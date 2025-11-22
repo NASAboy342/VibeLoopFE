@@ -1,50 +1,63 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# VibeLoop Frontend Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Vue 3 Composition API First
+All components must use Vue 3 Composition API with `<script setup>` syntax; No Options API allowed; Use `ref`, `reactive`, `computed`, `watch` for reactivity; Prefer `defineProps`, `defineEmits` for component communication; TypeScript strict mode enabled - all types must be explicitly defined.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. TypeScript Strict Mode (NON-NEGOTIABLE)
+TypeScript strict mode must be enabled at all times; All variables, functions, props, and return types must have explicit type annotations; No `any` types allowed - use `unknown` or proper type definitions; Interface over type alias for object shapes; Use type guards for runtime type safety.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Composables for Reusable Logic
+Extract reusable logic into composables following the `use[Feature]` naming convention; Composables must be placed in `src/composables/` directory; Each composable should have a single responsibility; Return only what consumers need; Properly handle lifecycle and cleanup (onUnmounted, watch cleanup).
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. DaisyUI Component Library Standard
+Leverage DaisyUI components for all UI elements: `btn`, `card`, `modal`, `dropdown`, `checkbox`, `input`, `textarea`, `select`, `badge`, `alert`, etc.; Use Tailwind CSS utility classes for custom styling; Follow DaisyUI theming system; Maintain consistent spacing and color patterns across the application.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Backend API Integration
+All data fetching must be abstracted in dedicated API service files or composables; API calls should be placed in `src/api/` or within composables; Mock data is allowed within API methods for development purposes; Use TypeScript interfaces to define API request/response types; Handle loading, error, and success states consistently.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Code Quality Standards
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Readability and Maintainability
+Code must be self-documenting with clear variable and function names; Components should be small and focused (< 200 lines preferred); Use proper TypeScript types instead of comments to explain intent; Avoid deeply nested logic - extract into separate functions or composables; Consistent file structure: imports → types → composables → reactive state → computed → methods → lifecycle hooks.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Component Structure
+Components must follow this structure:
+- Place in appropriate directory (`src/components/`, `src/views/`, `src/layouts/`)
+- Use PascalCase for component names
+- Single File Components (SFC) with `<script setup lang="ts">`, `<template>`, `<style scoped>`
+- Props and emits must be typed using TypeScript interfaces
+- Keep template logic minimal - move complex computations to computed properties or methods
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### No Testing Requirements
+No unit tests, integration tests, or E2E tests required; Focus on writing clean, readable, and maintainable code instead; Manual testing and code reviews are sufficient for quality assurance; However, type safety through TypeScript strict mode is mandatory.
+
+## Technical Stack Requirements
+
+### Required Technologies
+- **Framework**: Vue 3 with Composition API
+- **Language**: TypeScript (strict mode enabled)
+- **Styling**: Tailwind CSS + DaisyUI component library
+- **Build Tool**: Vite
+- **State Management**: Composables and Vue reactivity (Pinia if needed for complex state)
+
+### File Organization
+```
+src/
+  api/          # API service functions and mock data
+  assets/       # Static assets (images, fonts, etc.)
+  components/   # Reusable components
+  composables/  # Reusable composition functions
+  types/        # TypeScript type definitions and interfaces
+  views/        # Page-level components
+  layouts/      # Layout components
+  router/       # Vue Router configuration
+  stores/       # Pinia stores (if needed)
+```
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution defines the non-negotiable standards for the VibeLoop frontend codebase; All code must comply with these principles; TypeScript strict mode and Composition API usage are mandatory; DaisyUI components should be used wherever applicable; Code reviews must verify adherence to these standards; Simplicity and readability take precedence over clever solutions.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2025-11-22 | **Last Amended**: 2025-11-22
