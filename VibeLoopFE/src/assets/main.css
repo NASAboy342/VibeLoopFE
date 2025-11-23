@@ -1,1 +1,12 @@
-@import './base.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force light theme only */
+:root {
+  color-scheme: light only;
+}
+
+html {
+  color-scheme: light;
+}
