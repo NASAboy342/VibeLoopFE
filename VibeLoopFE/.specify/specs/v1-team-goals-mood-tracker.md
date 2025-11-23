@@ -50,15 +50,26 @@ A minimal web application where:
      - Checkbox for each goal to mark complete
    
 2. **Card Interactions**:
-   - Click checkbox → mark goal as complete (visual feedback)
+   - Click checkbox → mark goal as complete (immediate visual feedback, no confirmation)
    - Completed goals should have strikethrough styling
+   - Hover over goal → show delete icon (trash icon)
+   - Click delete icon → remove goal immediately (no confirmation in v1)
    - Mood emoji shows current status (last updated)
+   - If mood is `null`, display "Set mood" placeholder text with neutral emoji at reduced opacity
+   - Long goal descriptions (>80 chars) truncate with ellipsis, show full text on hover tooltip
+
+3. **Empty States**:
+   - Member with no goals: Show "No goals for today" message in card
+   - No team members: Show "No team members yet" centered on dashboard
+   - All goals completed: Show "All goals completed! 🎉" in goal area
 
 **Technical Requirements**:
 - Use DaisyUI `card` component for member cards
 - Use DaisyUI `checkbox` for goal completion
-- Grid layout responsive to card count
-- Real-time updates when data changes
+- Grid layout: 3-4 cards per row
+- Display team members sorted alphabetically by name
+- Auto-refresh data from server every 30 seconds (polling)
+- Use native `fetch` API for all HTTP requests
 
 ---
 
@@ -73,14 +84,15 @@ A minimal web application where:
 - Cancel button (DaisyUI `btn btn-ghost`)
 
 **Behavior**:
-- Form can be inline on dashboard or in a modal (DaisyUI `modal`)
+- Form opens in a modal (DaisyUI `modal`)
 - Goal is added to selected member's card immediately
-- Form clears after successful submission
-- Empty/invalid inputs show validation error
+- Form closes after successful submission
+- Display inline validation errors below form fields
 
 **Validation**:
 - Team member must be selected
-- Goal description required (min 3 characters)
+- Goal description required (min 3 characters, max 200 characters)
+- Show error messages inline with red text below invalid fields
 
 **Technical Requirements**:
 - Use Vue 3 Composition API with TypeScript
@@ -110,10 +122,11 @@ A minimal web application where:
 - 😤 Stressed - Overwhelmed, needs help
 
 **Behavior**:
-- Form can be inline on dashboard or in a modal
+- Form opens in a modal (DaisyUI `modal`)
 - Mood updates immediately on member card
 - Previous mood is replaced (no history)
-- Confirmation message on successful update
+- Form closes after successful update
+- Display inline validation errors below form fields
 
 **Technical Requirements**:
 - Create composable `useMood` for mood management logic
@@ -145,14 +158,19 @@ A minimal web application where:
      - 😤 Stressed: 0
 
 **Visual Design**:
-- Stats panel at top or side of dashboard
+- Stats panel fixed at top of dashboard (above member cards)
 - Use DaisyUI `stats` component for layout
 - Clear visual separation from member cards
-- Update in real-time as goals/moods change
+- Update automatically as goals/moods change
+
+**Edge Cases**:
+- When no goals exist: Display "No goals yet" instead of 0%
+- When denominator is 0: Show "0%" or "No goals yet"
 
 **Technical Requirements**:
 - Computed properties to calculate stats
 - No API calls needed (derive from existing data)
+- Stats recalculate on any goal/mood change
 
 ---
 
@@ -176,10 +194,10 @@ interface TeamMember {
 interface Goal {
   id: string;
   memberId: string;
-  description: string;
+  description: string; // min 3 chars, max 200 chars
   completed: boolean;
   createdAt: string;
-  date: string; // YYYY-MM-DD format for the day
+  date: string; // YYYY-MM-DD format (browser local date), only today's goals shown
 }
 ```
 
@@ -356,14 +374,28 @@ PUT /api/members/{memberId}/mood
 ### 6.4 Update Mood
 
 1. User clicks "Update Mood" button
-2. Modal/form appears
+2. Modal appears
 3. User selects team member from dropdown
 4. User clicks mood emoji button
 5. User clicks "Submit"
-6. Mood emoji updates on member's card
-7. Team mood breakdown updates in stats panel
+6. Modal closes
+7. Mood emoji updates on member's card
+8. Team mood breakdown updates in stats panel
 
 **Success Criteria**: Mood change visible immediately on dashboard
+
+---
+
+### 6.5 Delete a Goal
+
+1. User hovers over a goal in a member card
+2. Delete icon (trash) appears next to goal
+3. User clicks delete icon
+4. Goal is removed immediately (no confirmation)
+5. Completion count updates
+6. Team completion % updates in stats panel
+
+**Success Criteria**: Goal removed with immediate visual feedback
 
 ---
 
@@ -372,13 +404,14 @@ PUT /api/members/{memberId}/mood
 ### 7.1 Layout
 
 - **Desktop only**: Minimum width 1024px
-- **Grid layout**: 3-4 member cards per row
-- **Stats panel**: Fixed at top or side
-- **Forms**: Modal overlays (DaisyUI modal) or inline expansion
+- **Stats panel**: Fixed at top of page (full width)
+- **Grid layout**: 3-4 member cards per row below stats panel
+- **Team members**: Sorted alphabetically by name
+- **Forms**: Modal overlays (DaisyUI modal)
 
 ### 7.2 Visual Design
 
-- Use DaisyUI default theme (or choose one theme)
+- Use DaisyUI "light" theme for consistency
 - Consistent spacing using Tailwind utilities
 - Card-based design for member information
 - Large, readable text for names and stats
@@ -387,8 +420,13 @@ PUT /api/members/{memberId}/mood
 ### 7.3 Interaction Patterns
 
 - Hover effects on interactive elements (DaisyUI provides this)
-- Loading states for async operations
-- Success/error feedback with DaisyUI `alert` component
+- Hover over goals shows delete icon
+- Loading states for async operations (spinner or skeleton)
+- Error handling:
+  - Form validation errors: inline messages below fields (red text)
+  - API errors: DaisyUI toast/alert notifications
+  - Network failures: Show error toast with retry option
+- Success feedback: No toast needed, visual state change is sufficient
 - Smooth transitions for state changes
 
 ### 7.4 Accessibility
@@ -442,7 +480,8 @@ src/
 ### 8.3 API Integration
 
 - Create API service functions in `src/api/`
-- Use `fetch` or `axios` for HTTP requests
+- Use native `fetch` API for all HTTP requests
+- Implement auto-refresh: poll server every 30 seconds to fetch latest data
 - Mock data allowed in API functions for development
 - Example mock structure:
 
@@ -539,7 +578,29 @@ The following features are explicitly excluded from v1:
 
 ---
 
-## 11. Implementation Notes
+## 11. Design Decisions & Clarifications
+
+### Key Decisions Made:
+
+1. **Modal Forms**: Both Add Goal and Update Mood use modals for cleaner UX
+2. **Stats Position**: Top of dashboard for maximum visibility
+3. **Goal Deletion**: Trash icon visible on hover, immediate deletion (no undo in v1)
+4. **Empty States**: Friendly messages for all empty scenarios
+5. **Error Display**: Inline validation in forms, toast notifications for API errors
+6. **Null Mood**: Shows "Set mood" text with faded neutral emoji
+7. **Goal Length**: 3-200 characters, truncate at 80 with hover tooltip
+8. **Date Handling**: Browser local date, only today's goals visible, no carryover
+9. **Form Behavior**: Close immediately after successful submission
+10. **Theme**: DaisyUI "light" theme
+11. **Data Refresh**: Auto-poll server every 30 seconds
+12. **Completion Feedback**: Immediate visual change only, no confirmation toast
+13. **Member Sorting**: Alphabetical by name
+14. **Zero Goals**: Display "No goals yet" instead of division by zero
+15. **HTTP Client**: Native `fetch` API
+
+---
+
+## 12. Implementation Notes
 
 ### Phase 1: Setup & Structure
 1. Set up TypeScript interfaces in `src/types/`
@@ -568,7 +629,7 @@ The following features are explicitly excluded from v1:
 
 ---
 
-## 12. Future Considerations (Post-v1)
+## 13. Future Considerations (Post-v1)
 
 *Not to be implemented now, but documented for future reference:*
 
