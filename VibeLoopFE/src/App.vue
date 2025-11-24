@@ -11,6 +11,6 @@ import Dashboard from './views/Dashboard.vue';
 <style scoped>
 #app {
   min-height: 100vh;
-  background-color: #ffffff;
+  background: linear-gradient(to bottom, #F8FAFC 0%, #F1F5F9 100%);
 }
 </style>

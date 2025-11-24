@@ -10,3 +10,77 @@
 html {
   color-scheme: light;
 }
+
+/* Custom Color Variables */
+:root {
+  /* Primary Colors */
+  --color-primary: #0891B2;
+  --color-primary-hover: #0E7490;
+  --color-primary-light: #E0F2FE;
+  --color-primary-focus: #22D3EE;
+  
+  /* Secondary Colors */
+  --color-secondary: #6366F1;
+  --color-secondary-hover: #4F46E5;
+  
+  /* Backgrounds */
+  --color-bg-app: #F8FAFC;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F1F5F9;
+  --color-bg-elevated: #FFFFFF;
+  
+  /* Text */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-text-tertiary: #94A3B8;
+  --color-text-inverse: #F8FAFC;
+  
+  /* Borders */
+  --color-border: #E2E8F0;
+  --color-border-hover: #CBD5E1;
+  
+  /* States */
+  --color-success: #10B981;
+  --color-success-light: #D1FAE5;
+  --color-success-dark: #059669;
+  
+  --color-error: #EF4444;
+  --color-error-light: #FEE2E2;
+  --color-error-dark: #DC2626;
+  
+  --color-warning: #F59E0B;
+  --color-warning-light: #FEF3C7;
+  
+  --color-info: #3B82F6;
+  --color-info-light: #DBEAFE;
+  
+  /* Mood Colors */
+  --mood-great-bg: #DCFCE7;
+  --mood-great-text: #065F46;
+  --mood-good-bg: #D1FAE5;
+  --mood-good-text: #047857;
+  --mood-neutral-bg: #F1F5F9;
+  --mood-neutral-text: #475569;
+  --mood-low-bg: #FEF3C7;
+  --mood-low-text: #92400E;
+  --mood-stressed-bg: #FEE2E2;
+  --mood-stressed-text: #991B1B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+  
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}

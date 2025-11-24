@@ -53,25 +53,38 @@ function handleDeleteGoal(goalId: string): void {
 </script>
 
 <template>
-  <div class="card bg-base-100 shadow-xl">
+  <div class="card">
     <div class="card-body">
       <!-- Member Name & Mood -->
       <h2 class="card-title">
         {{ member.name }}
-        <span :class="moodDisplay.opacity" :title="moodDisplay.text">
+        <span 
+          v-if="member.mood"
+          class="mood-badge"
+          :class="`mood-${member.mood}`"
+          :title="moodDisplay.text"
+        >
           {{ moodDisplay.emoji }}
+        </span>
+        <span 
+          v-else
+          class="mood-badge mood-neutral opacity-40"
+          title="Set mood"
+        >
+          {{ MOOD_EMOJI.neutral }}
         </span>
       </h2>
       
       <!-- Completion Count -->
-      <p class="text-sm text-gray-500">{{ completionCount }}</p>
+      <p class="completion-count">{{ completionCount }}</p>
       
       <!-- Goals List -->
-      <div v-if="member.goals.length > 0" class="space-y-2 mt-4">
+      <div v-if="member.goals.length > 0" class="goals-list">
         <div
           v-for="goal in member.goals"
           :key="goal.id"
-          class="flex items-center gap-2 group"
+          class="goal-item"
+          :class="{ completed: goal.completed }"
           @mouseenter="hoveredGoalId = goal.id"
           @mouseleave="hoveredGoalId = null"
         >
@@ -79,23 +92,23 @@ function handleDeleteGoal(goalId: string): void {
           <input
             type="checkbox"
             :checked="goal.completed"
-            class="checkbox checkbox-sm"
+            class="checkbox"
             @change="handleToggleGoal(goal.id, goal.completed)"
           />
           
           <!-- Goal Text -->
           <span
-            :class="{ 'line-through text-gray-400': goal.completed }"
-            class="flex-1"
+            class="goal-text"
+            :class="{ completed: goal.completed }"
             :title="goal.description"
           >
             {{ truncateGoal(goal.description) }}
           </span>
           
-          <!-- Delete Icon (visible on hover) -->
+          <!-- Delete Button -->
           <button
-            v-if="hoveredGoalId === goal.id"
-            class="btn btn-ghost btn-xs text-error"
+            class="delete-btn"
+            :class="{ visible: hoveredGoalId === goal.id }"
             @click="handleDeleteGoal(goal.id)"
             aria-label="Delete goal"
           >
@@ -105,9 +118,149 @@ function handleDeleteGoal(goalId: string): void {
       </div>
       
       <!-- Empty State -->
-      <div v-else class="text-center text-gray-400 py-4">
+      <div v-else class="empty-state">
         No goals for today
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.mood-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: all var(--transition-fast);
+}
+
+.mood-great {
+  background: var(--mood-great-bg);
+}
+
+.mood-good {
+  background: var(--mood-good-bg);
+}
+
+.mood-neutral {
+  background: var(--mood-neutral-bg);
+}
+
+.mood-low {
+  background: var(--mood-low-bg);
+}
+
+.mood-stressed {
+  background: var(--mood-stressed-bg);
+}
+
+.completion-count {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.goal-item:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.goal-item.completed {
+  background-color: var(--color-bg-hover);
+}
+
+.goal-text {
+  flex: 1;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.goal-text.completed {
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--color-success);
+  border-color: var(--color-border-hover);
+  cursor: pointer;
+}
+
+.delete-btn {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  color: var(--color-error);
+  background: transparent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 1.125rem;
+}
+
+.delete-btn.visible {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background-color: var(--color-error-light);
+  color: var(--color-error-dark);
+}
+
+.empty-state {
+  color: var(--color-text-tertiary);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+}
+</style>
